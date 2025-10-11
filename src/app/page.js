@@ -3,6 +3,8 @@
 import { useState } from "react";
 import Image from "next/image";
 
+import { get_stored, increment_stored } from "@/lib/actions/resources";
+
 export default function Home() {
   // === Expanded ASCII scenes ===
   const asciiArtList = [
@@ -43,6 +45,7 @@ export default function Home() {
 
   const [index, setIndex] = useState(0);
   const nextArt = () => setIndex((i) => (i + 1) % asciiArtList.length);
+
 
   return (
     <div className="relative min-h-screen overflow-hidden font-sans">
