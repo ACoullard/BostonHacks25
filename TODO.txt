@@ -1,0 +1,5 @@
+- Create sketch layout and flow
+- Build out prototype backend
+- Build up prototype backend
+
+- Add in elevenlabs voice integration
