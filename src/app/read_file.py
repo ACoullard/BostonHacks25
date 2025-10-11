@@ -2,10 +2,10 @@ import json
 
 class Maze:
     def __init__(self, filename):
-        with open(filename, "r") as f:
-            data = json.load(f)
-        self.grid = data["grid"]
-        self.environment = data["environment"]
+        with open(filename, "r") as file:
+            data = json.load(file)
+        self.grid = data["map"]
+        
 
         self.rows = len(self.grid)
         self.cols = len(self.grid[0])
@@ -18,11 +18,6 @@ class Maze:
                     return(r,c)
         raise ValueError("Player not found in maze!")
 
-    def describe(self):
-        """Print the maze and environment."""
-        print(f"\nEnvironment: {self.environment}")
-        for row in self.grid:
-            print("".join(row))
 
     def get_surroundings(self):
         """Return contents of up, down, left, right blocks around player."""
@@ -33,7 +28,12 @@ class Maze:
             "up": (r - 1, c),
             "down": (r + 1, c),
             "left": (r, c - 1),
-            "right": (r, c + 1)
+            "right": (r, c + 1),
+            "up-left": (r - 1, c - 1),
+            "up-right": (r - 1, c + 1),
+            "down-left": (r + 1, c - 1),
+            "down-right": (r + 1, c + 1)
+
         }
 
         for direction, (dr, dc) in directions.items():
@@ -50,7 +50,11 @@ class Maze:
             "up": (-1, 0),
             "down": (1, 0),
             "left": (0, -1),
-            "right": (0, 1)
+            "right": (0, 1),
+            "up-left": (-1, -1),
+            "up-right": (-1, 1),
+            "down-left": (1,-1),
+            "down-right": (1,1)
         }
 
         if direction not in moves:
@@ -72,10 +76,21 @@ class Maze:
             self.grid[r][c] = " "
             self.grid[new_r][new_c] = "P"
             self.player_pos = (new_r, new_c)
-            return "🎉 You found the exit!"
+            return "You found the exit!"
         else:
             self.grid[r][c] = " "
             self.grid[new_r][new_c] = "P"
             self.player_pos = (new_r, new_c)
             return f"You move {direction}."
        
+
+#testing the maze
+if __name__ == "__main__":
+       maze = Maze(r"src\app\api\map.json") 
+       print("Initial position: ", maze.player_pos)
+       print("Surroundings: ", maze.get_surroundings())
+
+       maze.move("left")
+       print("After moving left: ")
+       print("Position: ", maze.player_pos)
+       print("Surroundings: ", maze.get_surroundings())
