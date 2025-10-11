@@ -1,15 +1,15 @@
 from google import genai
-from google.genai import types
-import json
 
 API_KEY = "AIzaSyDGu_RLE9U2cBGsq9SRghxLEinBlLb6YQk"
 MODEL = "models/gemini-2.5-flash-lite"
-MESSAGE = r'generate a 9 by 9 array where the elements \
+N = 6
+MESSAGE = f'generate a {N} by {N} array where the elements \
     are from the list [P, T, R]. \
-    Randomly specify a "starting point" labelled "S", \
-    and a "ending point" labelled "F". \
-    The "P" elements must be connected and form a pathfrom "S" to "F". \
-    output this array in the format: """[[], [], [], [], []]"""'
+    Must randomly specify one "starting point" labelled "S", \
+    and one "ending point" labelled "F", the two should not be seperated less than {N} entries. \
+    The "P" elements must be connected and form a pathfrom "S" to "F" (diagonals are allowed). \
+    Output this array in the format: """{{"map":[[], [], [], [], []]}}"""'
+MAP_PATH = r"backend_data\map.json"
 
 def ask_llm(key, model_id, messages, temperature=0.7):
     client = genai.Client(api_key=key)
@@ -17,9 +17,17 @@ def ask_llm(key, model_id, messages, temperature=0.7):
         model=model_id,
         contents=messages,
         config={
-            'response_mime_type': 'application/json',
-            
-        })
-    return json.loads(response)
+            'response_mime_type': 'application/json'
+    })
+    return (response.text)
 
-if __name__ == "main"
+def store_map(filename, content):
+    with open (filename, 'w') as file:
+        file.write(content)
+
+def main():
+    response = ask_llm(API_KEY,MODEL, MESSAGE)
+    store_map(MAP_PATH, response)
+
+if __name__ == "__main__":
+    main()
