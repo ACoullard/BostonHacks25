@@ -1,29 +1,24 @@
 "use client";
 
+import { useChat } from '@ai-sdk/react';
 import { useState } from "react";
 
 export default function ChatBox() {
-  const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
+  const { messages, sendMessage } = useChat();
 
-  const sendMessage = () => {
+
+  console.log(messages)
+
+  const handleSend = () => {
     if (!input.trim()) return;
-
-    const userMessage = { role: "user", content: input };
-    setMessages((prev) => [...prev, userMessage]);
-
-    // Simulate a response (replace with actual API call later)
-    setTimeout(() => {
-      const botMessage = { role: "assistant", content: `Echo: ${input}` };
-      setMessages((prev) => [...prev, botMessage]);
-    }, 1000);
-
+    sendMessage({ text: input });
     setInput("");
   };
 
   const handleKeyPress = (e) => {
     if (e.key === "Enter") {
-      sendMessage();
+      handleSend();
     }
   };
 
@@ -36,21 +31,28 @@ export default function ChatBox() {
             Start a conversation...
           </div>
         ) : (
-          messages.map((msg, index) => (
+          messages.map((m) => (
             <div
-              key={index}
+              key={m.id}
               className={`flex ${
-                msg.role === "user" ? "justify-end" : "justify-start"
+                m.role === "user" ? "justify-end" : "justify-start"
               }`}
             >
               <div
                 className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
-                  msg.role === "user"
+                  m.role === "user"
                     ? "bg-green-600 text-white"
                     : "bg-gray-700 text-gray-100"
                 }`}
               >
-                {msg.content}
+                {m.parts.map((part) => {
+                  switch (part.type) {
+                    case "text":
+                      return <p key={part.text}>{part.text}</p>;
+                    default:
+                      return null;
+                  }
+                })}
               </div>
             </div>
           ))
@@ -69,7 +71,7 @@ export default function ChatBox() {
             className="flex-1 bg-gray-800 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
           />
           <button
-            onClick={sendMessage}
+            onClick={handleSend}
             className="bg-green-600 hover:bg-green-500 text-white px-4 py-2 rounded-lg transition"
           >
             Send
