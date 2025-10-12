@@ -26,10 +26,15 @@ const world_tile_types = await generateMaze(6);
 console.log(world_tile_types);
 const world_tile_descriptions = await generateMapDescriptions(world_tile_types)
 console.log(world_tile_descriptions);
-export let current_Location = await findPlayer(world_tile_types);
+let current_Location = await findPlayer(world_tile_types);
 console.log(current_Location);
 
 const sys_prompt = "You are the narrator of a text-based adventure game.";
+
+export async function getCurrentLocationDescription() {
+    return world_tile_descriptions[current_Location[0]][current_Location[1]];
+}
+
 
 export async function getRoomPrompt(surrounding, action) {
     const base_sys_prompt = `${sys_prompt} You describe the environment and what the player sees based on their actions and surroundings. \
