@@ -33,8 +33,9 @@ def add_landscape(filename):
             m = random.randint(LOWER, UPPER)
             i += rows
             rows = 0
+    content = {"map": map}
     with open(filename, 'w') as file:
-        json.dump(map, file)
+        json.dump(content, file)
     return map
 
 def main():
