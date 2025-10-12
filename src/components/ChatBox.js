@@ -58,7 +58,11 @@ export default function ChatBox({ onImageGenerated }) {
         const res = await fetch("/api/currentlocation", { method: "GET", headers: { "Content-Type": "application/json" } });
         const data = await res.json();
         const description = data?.description?.trim();
-        if (!description) return;
+        if (!description) {
+          console.log("GOT NO DESCRIPTION");
+          return;
+        }
+        console.log("GOT DESCRIPTION:", description);
         await generateImage(description);
       } catch (e) {
         console.error("Failed to fetch current location:", e);

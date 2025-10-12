@@ -140,6 +140,7 @@ export async function move(grid, direction) {
 
     const desciption = world_tile_descriptions[newR][newC];
     const tile_type = grid[newR][newC];
+    const currentDescription = world_tile_descriptions[r][c]; // Keep current location description for failed moves
 
     console.log("target: ", tile_type)
     if (tile_type !== 'P') {
@@ -147,7 +148,7 @@ export async function move(grid, direction) {
         return await `${sys_prompt} You describe the environment and what the player sees based on their actions and surroundings. \
     Keep descriptions engaging. \
     Limit your response to 2-3 sentences. \
-    the user is facing  ${desciption}   and the user just   ${type}  ${direction}` + ". generate a text explaining that the player cannot go this direction.";
+    the user is currently in  ${currentDescription}   and tried to ${type}  ${direction} but cannot` + ". generate a text explaining that the player cannot go this direction and describe their current surroundings.";
     }
     else if (tile_type == 'F') {
         // grid[r][c] = 'P';
