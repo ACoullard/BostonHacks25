@@ -1,14 +1,12 @@
 "use client";
 
 import { useChat } from '@ai-sdk/react';
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 
 export default function ChatBox() {
   const [input, setInput] = useState("");
   const { messages, sendMessage } = useChat();
-
-
-  console.log(messages)
+  const messagesEndRef = useRef(null);
 
   const handleSend = () => {
     if (!input.trim()) return;
@@ -22,61 +20,54 @@ export default function ChatBox() {
     }
   };
 
+  // Auto scroll to bottom
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
   return (
-    <div className="w-full max-w-2xl mx-auto bg-gray-900 bg-opacity-90 rounded-lg shadow-lg overflow-hidden">
+    <div className="w-[500px] mx-auto bg-black rounded-lg shadow-lg overflow-hidden font-mono text-green-400">
       {/* Messages Area */}
-      <div className="h-96 overflow-y-auto p-4 space-y-4">
+      <div className="h-[600px] overflow-y-auto p-4 space-y-1">
         {messages.length === 0 ? (
-          <div className="text-center text-gray-400">
+          <div className="text-gray-600">
             Start a conversation...
           </div>
         ) : (
           messages.map((m) => (
-            <div
-              key={m.id}
-              className={`flex ${
-                m.role === "user" ? "justify-end" : "justify-start"
-              }`}
-            >
-              <div
-                className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
-                  m.role === "user"
-                    ? "bg-green-600 text-white"
-                    : "bg-gray-700 text-gray-100"
-                }`}
-              >
-                {m.parts.map((part) => {
-                  switch (part.type) {
-                    case "text":
-                      return <p key={part.text}>{part.text}</p>;
-                    default:
-                      return null;
-                  }
-                })}
-              </div>
+            <div key={m.id}>
+              <span className={`${m.role === "user" ? "text-green-400" : "text-gray-400"}`}>
+                {m.role === "user" ? "You: " : "Bot: "}
+              </span>
+              {m.parts.map((part) => {
+                if (part.type === "text") {
+                  return <span key={part.text}>{part.text}</span>;
+                }
+                return null;
+              })}
             </div>
           ))
         )}
+        <div ref={messagesEndRef} />
       </div>
 
       {/* Input Area */}
-      <div className="border-t border-gray-700 p-4">
-        <div className="flex space-x-2">
-          <input
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyPress={handleKeyPress}
-            placeholder="Type your message..."
-            className="flex-1 bg-gray-800 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
-          />
-          <button
-            onClick={handleSend}
-            className="bg-green-600 hover:bg-green-500 text-white px-4 py-2 rounded-lg transition"
-          >
-            Send
-          </button>
-        </div>
+      <div className="border-t border-gray-700 p-2 flex space-x-2">
+        <span className="text-green-400"></span>
+        <input
+          type="text"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyPress={handleKeyPress}
+          placeholder="Type your message..."
+          className="flex-1 bg-black text-green-400 placeholder-green-600 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-green-500"
+        />
+        <button
+          onClick={handleSend}
+          className="bg-green-700 hover:bg-green-600 text-white px-4 py-1 rounded transition"
+        >
+          Send
+        </button>
       </div>
     </div>
   );
