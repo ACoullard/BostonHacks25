@@ -214,7 +214,7 @@ export async function move(grid, direction) {
         return await `${sys_prompt} You describe the environment and what the player sees based on their actions and surroundings. \
     Keep descriptions engaging. \
     Limit your response to 2-3 sentences. \
-    the user is facing " ${target}  " and the user just "  ${type} + " " + ${direction}` + ". generate a text explaining that the player cannot go this direction.";
+    the user is facing  ${target}   and the user just   ${type}  ${direction}` + ". generate a text explaining that the player cannot go this direction.";
     }
     else if (target == 'F') {
         grid[r][c] = 'P';
