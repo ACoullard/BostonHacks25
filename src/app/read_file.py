@@ -64,9 +64,10 @@ class Maze:
         dr, dc = moves[direction]
         new_r, new_c = r + dr, c + dc
 
-        # Check bounds
-        if not (0 <= new_r < self.rows and 0 <= new_c < self.cols):
-            return "You can't move outside the maze."
+        # wrap around
+        new_r = new_r % self.rows
+        new_c = new_c % self.cols
+        
 
         # Check cell type
         target = self.grid[new_r][new_c]
