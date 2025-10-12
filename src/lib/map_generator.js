@@ -38,5 +38,6 @@ export async function addLandscape(filename = MAP_FILE) {
   return map;
 }
 
+
 // Example usage
-// addLandscape().then(console.log);
+addLandscape("src\\app\\api\\map.json").then(console.log);

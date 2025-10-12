@@ -1,5 +1,5 @@
 from google import genai
-API_KEY = "AIzaSyDGu_RLE9U2cBGsq9SRghxLEinBlLb6YQk"
+
 MODEL = "models/gemini-2.5-flash-lite"
 
 environment_choice = input("Select an environment: ")

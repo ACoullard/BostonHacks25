@@ -91,10 +91,10 @@ export class Maze {
 }
 
 // Example usage:
-// const maze = new Maze();
-// await maze.load();
-// console.log('Initial position:', maze.playerPos);
-// console.log('Surroundings:', maze.getSurroundings());
-// maze.move('left');
-// console.log('After moving left:', maze.playerPos);
-// console.log('Surroundings:', maze.getSurroundings());
+const maze = new Maze();
+await maze.load();
+console.log('Initial position:', maze.playerPos);
+console.log('Surroundings:', maze.getSurroundings());
+maze.move('left');
+console.log('After moving left:', maze.playerPos);
+console.log('Surroundings:', maze.getSurroundings());
