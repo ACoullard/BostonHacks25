@@ -12,7 +12,7 @@ MESSAGE = f'generate a {N} by {N} array where the elements \
     Output this array in the format: """{{"map":[[], [], [], [], []]}}"""'
 MAP_PATH = r"backend_data\map.json"
 
-def ask_llm(key, model_id, messages, temperature=0.5):
+def ask_llm(key, model_id, messages, temperature=0.7):
     client = genai.Client(api_key=key)
     response = client.models.generate_content(
         model=model_id,
