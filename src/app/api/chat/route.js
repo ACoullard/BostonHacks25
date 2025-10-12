@@ -30,6 +30,7 @@ export async function POST(req) {
   
   console.log("recent text: ", last_message.parts[0].text)
   const result = await determineAction(last_message.parts[0].text)
+  
   const resultStream = await streamText({
     model: google('gemini-2.5-flash-lite'),
     system: result.prompt,

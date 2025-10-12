@@ -1,4 +1,5 @@
 'use server';
+import { generateMapDescriptions } from "../generate_descriptions";
 
 // this file will run on the server and should contain the 
 // logic for storing world data information, 
@@ -8,11 +9,14 @@
 const possible_base_actions = ["move", "look"]
 const directions = [[-1, 0], [1, 0], [0, -1], [0, 1], [-1, -1], [-1, 1], [1, -1], [1, 1], [0,0]]
 
+let current_Location = [0,0];
+const world_map = await generateMapDescriptions(9, 9)
+
 export async function getRoomPrompt(direction) {
     const base_sys_prompt = "You are the narrator of a text-based adventure game. You describe the environment and what the player sees based on their actions. Keep descriptions engaging. Limit your response to 2-3 sentences. Here is the description of what the user is looking at: "
 
 
-    return base_sys_prompt + "You are in a dark room. There is a door to the north.";
+    return base_sys_prompt + desc;
 
 }
 
@@ -23,6 +27,6 @@ export async function getRoomPrompt(direction) {
 export async function determineAction(user_input) {
     return {
         type: "look",
-        prompt: getRoomPrompt(directions[directions.length - 1])
+        prompt: await getRoomPrompt(directions[directions.length - 1])
     }
 }
