@@ -10,14 +10,13 @@ UPPER = 5
 def add_landscape(filename):
     with open(filename) as file:
         map = json.load(file)["map"]
-        print(map)
     n = random.randint(LOWER, UPPER)
     m = random.randint(LOWER, UPPER)
     i = 0
     cols = 0
     rows = 0
-    for row_num in len(map):
-        for col_num in len(map[row_num]):
+    for row_num in range(len(map)):
+        for col_num in range(len(map[row_num])):
             if (map[row_num][col_num] == 'Q'):
                 map[row_num][col_num] = i
             n -= 1
@@ -33,6 +32,9 @@ def add_landscape(filename):
         if (m == 0):
             m = random.randint(LOWER, UPPER)
             i += rows
+            rows = 0
+    with open(filename, 'w') as file:
+        json.dump(map, file)
     return map
 
 def main():
