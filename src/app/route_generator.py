@@ -2,14 +2,15 @@ from google import genai
 
 API_KEY = "AIzaSyDGu_RLE9U2cBGsq9SRghxLEinBlLb6YQk"
 MODEL = "models/gemini-2.5-flash-lite"
-N = 6
+N = 10
 MESSAGE = f'generate a {N} by {N} array where the elements \
     are from the list [P, Q]. \
     Must randomly specify one "starting point" labelled "S", \
     and one "ending point" labelled "F" \
-    The "P" elements must and form a complete connected path from "S" to "F" (diagonals are allowed). \
-    The path length should be at least {N} entries long\
-    Output this array in the format: """{{"map":[[], [], [], [], []]}}"""'
+    The "P" elements must and form a complete connected path from "S" to "F" (diagonals are allowed, can cross borders). \
+    The path length should be at least {N} entries long.\
+    The number of "P" should be less than {N**2 /2}\
+    Output this array must be in the format: """{{"map":[[], [], [], [], []]}}"""'
 MAP_PATH = r"backend_data\map.json"
 
 def ask_llm(key, model_id, messages, temperature=0.7):
