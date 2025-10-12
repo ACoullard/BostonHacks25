@@ -3,16 +3,8 @@
 import { useChat } from '@ai-sdk/react';
 import { useState, useRef, useEffect } from "react";
 
-<<<<<<< HEAD
-export default function ChatBox({ onImageGenerated }) {
-=======
-import { generateMapDescriptions } from '@/lib/generate_descriptions';
-
 export default function ChatBox() {
 
-  generateMapDescriptions(9, 9).then(console.log);
-
->>>>>>> 06c2b69f0840a1e29eb05811a9a97a02b6e1c829
   const [input, setInput] = useState("");
   const { messages, sendMessage } = useChat();
   console.log("messages: ", messages[messages.length - 1]);

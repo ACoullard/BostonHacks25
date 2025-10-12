@@ -1,6 +1,6 @@
 'use server';
-import { generateMapDescriptions } from "../generate_descriptions";
-
+import { fromScratchGenerateMapDescriptions, generateMapDescriptions } from "../generate_descriptions";
+import { generateMaze } from "../generate_map";
 // this file will run on the server and should contain the 
 // logic for storing world data information, 
 // finding relevent world data stores, 
@@ -10,7 +10,10 @@ const possible_base_actions = ["move", "look"]
 const directions = [[-1, 0], [1, 0], [0, -1], [0, 1], [-1, -1], [-1, 1], [1, -1], [1, 1], [0, 0]]
 
 let current_Location = [0, 0];
-const world_map = await generateMapDescriptions(9, 9)
+const world_tile_types = await generateMaze(6);
+console.log(world_tile_types);
+const world_tile_descriptions = await generateMapDescriptions(world_tile_types)
+console.log(world_tile_descriptions);
 
 export async function getRoomPrompt(surrounding, action) {
     const base_sys_prompt = `You are the narrator of a text-based adventure game. \
