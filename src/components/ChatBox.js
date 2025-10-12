@@ -2,12 +2,10 @@
 
 import { useChat } from '@ai-sdk/react';
 import { useState, useRef, useEffect } from "react";
-<<<<<<< Updated upstream
 import { generateMapDescriptions } from '@/lib/generate_descriptions';
-export default function ChatBox({ onImageGenerated }) {
-=======
 import { world_tile_descriptions, current_Location } from '@/lib/actions/resources';
->>>>>>> Stashed changes
+
+export default function ChatBox({ onImageGenerated }) {
 
   generateMapDescriptions(9, 9).then(console.log);
 
