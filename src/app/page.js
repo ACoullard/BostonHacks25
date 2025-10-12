@@ -19,28 +19,37 @@ export default function Home() {
   // === Initial background load ===
   useEffect(() => {
     if (size.w === 0 || size.h === 0) return;
-    imageToAscii("/Start.png", 12, canvasARef.current).then(({ dominantColor }) => {
-      setDominantColor(dominantColor);
-    });
+    if (!canvasARef.current) return;
+
+    imageToAscii("/Start.png", 12, canvasARef.current)
+      .then(({ dominantColor }) => {
+        setDominantColor(dominantColor);
+      })
+      .catch(err => console.error("Failed to load initial ASCII:", err));
   }, [size]);
 
   // === Handle new image generation from ChatBox ===
   const handleImageGenerated = async (imageData) => {
-    const nextCanvas = activeCanvas === "A" ? canvasBRef.current : canvasARef.current;
-    const currentCanvas = activeCanvas === "A" ? canvasARef.current : canvasBRef.current;
+    setActiveCanvas(prevActive => {
+      const nextCanvas = prevActive === "A" ? canvasBRef.current : canvasARef.current;
+      const currentCanvas = prevActive === "A" ? canvasARef.current : canvasBRef.current;
 
-    // Draw new ASCII to the inactive canvas
-    const { dominantColor: newColor } = await imageToAscii(imageData, 12, nextCanvas);
+      if (!nextCanvas || !currentCanvas) return prevActive;
 
-    // Update dominant color (for overlay glow)
-    setDominantColor(newColor);
+      // Draw new ASCII to the inactive canvas
+      imageToAscii(imageData, 12, nextCanvas)
+        .then(({ dominantColor: newColor }) => {
+          setDominantColor(newColor);
 
-    // Trigger fade transition
-    nextCanvas.style.opacity = 1;
-    currentCanvas.style.opacity = 0;
+          // Trigger fade transition
+          nextCanvas.style.opacity = 1;
+          currentCanvas.style.opacity = 0;
+        })
+        .catch(err => console.error("Failed to generate ASCII:", err));
 
-    // Swap active canvas
-    setActiveCanvas(activeCanvas === "A" ? "B" : "A");
+      // Swap active canvas
+      return prevActive === "A" ? "B" : "A";
+    });
   };
 
   // === Debounced Resize Listener ===
@@ -86,6 +95,10 @@ export default function Home() {
 
       {/* === Styles === */}
       <style jsx>{`
+        .ascii-layer {
+          transition: opacity 1s ease-in-out;
+        }
+
         /* === Subtle, alive ASCII brightness pulsing === */
         @keyframes asciiGlow {
           0%, 100% { opacity: 0.8; filter: brightness(1.0) saturate(1.1); }
