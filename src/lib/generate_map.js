@@ -1,31 +1,39 @@
-import { StreamingTextResponse, OpenAIStream, Message, streamText } from 'ai';
+import { generateObject } from 'ai';
+import { google } from '@ai-sdk/google';
 import fs from 'fs/promises';
 import path from 'path';
+import { z } from 'zod';
 
-const N = 6;
-const MESSAGE = `generate a ${N} by ${N} array where the elements are from the list [P, Q]. Must randomly specify one \"starting point\" labelled \"S\", and one \"ending point\" labelled \"F\". The \"P\" elements must and form a complete connected path from \"S\" to \"F\" (diagonals are allowed). The path length should be at least ${N} entries long. Output this array in the format: {\"map\":[[], [], [], [], []]}`;
-const MAP_PATH = path.join(process.cwd(), 'public', 'map.json');
+const gemini = google('gemini-2.5-flash-lite');
 
-export async function POST(req) {
-  // Use Vercel AI SDK v5 to call LLM
-  const response = await streamText({
-    model: 'openai/gpt-4o', // Replace with your model
-    messages: [
-      { role: 'user', content: MESSAGE }
-    ],
-    temperature: 0.7,
-    responseMimeType: 'application/json',
+const mazeSchema = z.object({
+  map: z.array(z.array(z.enum(["P", "Q", "S", "F"])))
+});
+
+
+/**
+ * Generates an N x N maze where:
+ * - Elements are from [P, Q]
+ * - One start ('S') and one finish ('F')
+ * - 'P' forms a complete connected path (diagonals allowed)
+ * @param {number} N - Maze dimension (N x N)
+ * @returns {Promise<{ map: string[][] }>} Generated maze object
+ */
+export async function generateMaze(N) {
+  const prompt = `
+    Generate a ${N}x${N} array where:
+    - Elements are only 'P' or 'Q'
+    - There is exactly one 'S' (start) and one 'F' (finish)
+    - All 'P's form a connected path from 'S' to 'F' (diagonals allowed)
+    - The path length should be at least ${N}
+    Format strictly as JSON: {"map": [["S","P","Q",...], ...]}
+  `;
+
+  const result = await generateObject({
+    model: gemini,
+    prompt,
+    schema: mazeSchema,
   });
 
-  let text = '';
-  for await (const chunk of response) {
-    text += chunk;
-  }
-
-  // Store map JSON
-  await fs.writeFile(MAP_PATH, text);
-
-  return new Response(text, {
-    headers: { 'Content-Type': 'application/json' }
-  });
+  return result.object.map;
 }
