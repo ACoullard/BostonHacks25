@@ -3,27 +3,43 @@
 import { useChat } from '@ai-sdk/react';
 import { useState, useRef, useEffect } from "react";
 
-import { generateMapDescriptions } from '@/lib/generate_descriptions';
-
 export default function ChatBox() {
-
-  generateMapDescriptions(9, 9).then(console.log);
 
   const [input, setInput] = useState("");
   const { messages, sendMessage } = useChat();
   console.log("messages: ", messages[messages.length - 1]);
   const messagesEndRef = useRef(null);
 
-  const handleSend = () => {
+  const handleSend = async () => {
     if (!input.trim()) return;
+
+    // Send message right away
     sendMessage({ text: input });
+
+    // 🔹 Clear input immediately for snappy feel
+    const userPrompt = input;
     setInput("");
+
+    // 🔹 Then asynchronously generate image
+    try {
+      const res = await fetch("/api/generate-image", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt: userPrompt }),
+      });
+
+      const data = await res.json();
+
+      if (data.image && typeof onImageGenerated === "function") {
+        onImageGenerated(data.image);
+      }
+    } catch (err) {
+      console.error("Image generation failed:", err);
+    }
   };
 
   const handleKeyPress = (e) => {
-    if (e.key === "Enter") {
-      handleSend();
-    }
+    if (e.key === "Enter") handleSend();
   };
 
   // Auto scroll to bottom
@@ -32,25 +48,22 @@ export default function ChatBox() {
   }, [messages]);
 
   return (
-    <div className="w-[500px] mx-auto bg-black rounded-lg shadow-lg overflow-hidden font-mono text-green-400">
+    <div className="w-[30vw] mx-auto bg-black/70 rounded-lg shadow-lg overflow-hidden font-mono text-green-400 relative">
       {/* Messages Area */}
-      <div className="h-[600px] overflow-y-auto p-4 space-y-1">
+      <div className="h-[70vh] overflow-y-auto p-4 space-y-1 animate-chat-pulse">
         {messages.length === 0 ? (
-          <div className="text-gray-600">
-            Start a conversation...
-          </div>
+          <div className="text-gray-600">Start a conversation...</div>
         ) : (
-          messages.map((m) => (
-            <div key={m.id}>
-              <span className={`${m.role === "user" ? "text-green-400" : "text-gray-400"}`}>
-                {m.role === "user" ? "You: " : "Bot: "}
-              </span>
-              {m.parts.map((part) => {
-                if (part.type === "text") {
-                  return <span key={part.text}>{part.text}</span>;
-                }
-                return null;
-              })}
+          messages.map((m, i) => (
+            <div
+              key={m.id}
+              className={`chat-line ${m.role === "user" ? "text-green-400" : "text-gray-400"}`}
+              style={{ animationDelay: `${i * 0.3}s` }}
+            >
+              <span>{m.role === "user" ? "You: " : "Bot: "}</span>
+              {m.parts.map((part) =>
+                part.type === "text" ? <span key={part.text}>{part.text}</span> : null
+              )}
             </div>
           ))
         )}
@@ -59,7 +72,6 @@ export default function ChatBox() {
 
       {/* Input Area */}
       <div className="border-t border-gray-700 p-2 flex space-x-2">
-        <span className="text-green-400"></span>
         <input
           type="text"
           value={input}
@@ -75,6 +87,22 @@ export default function ChatBox() {
           Send
         </button>
       </div>
+
+      {/* === Pulse Animation Styles === */}
+      <style jsx>{`
+        @keyframes chatPulse {
+          0%, 100% { opacity: 0.9; filter: brightness(0.9); }
+          50% { opacity: 1; filter: brightness(1.2); }
+        }
+
+        .chat-line {
+          animation: chatPulse 3s ease-in-out infinite;
+        }
+
+        .chat-line:nth-child(2n) { animation-duration: 3.5s; }
+        .chat-line:nth-child(3n) { animation-duration: 2.8s; }
+        .chat-line:nth-child(4n) { animation-duration: 3.2s; }
+      `}</style>
     </div>
   );
 }
