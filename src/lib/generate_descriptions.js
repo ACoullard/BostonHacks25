@@ -100,10 +100,10 @@ Return an object with keys 'P', 'Q', 'S', 'F', each containing an array of descr
 `;
 
         const tileSchema = z.object({
-            P: z.array(z.string()).length(counts["P"]),
-            Q: z.array(z.string()).length(counts["Q"]),
-            S: z.array(z.string()).length(counts["S"]),
-            F: z.array(z.string()).length(counts["F"]),
+            P: z.array(z.string()),
+            Q: z.array(z.string()),
+            S: z.array(z.string()),
+            F: z.array(z.string())
         });
 
         const tileResult = await generateObject({
@@ -112,16 +112,23 @@ Return an object with keys 'P', 'Q', 'S', 'F', each containing an array of descr
             schema: tileSchema,
         });
 
+        // Manually slice arrays to the correct size
+        const processedResult = {
+            P: (tileResult.object.P || []).slice(0, counts["P"]),
+            Q: (tileResult.object.Q || []).slice(0, counts["Q"]),
+            S: (tileResult.object.S || []).slice(0, counts["S"]),
+            F: (tileResult.object.F || []).slice(0, counts["F"])
+        };
+
         // 3. Assign descriptions to tiles in the 3x3 area
         const typeIndices = {P: 0, Q: 0, S: 0, F: 0};
         for (let i = 0; i < areaSize; i++) {
             for (let j = 0; j < areaSize; j++) {
-                console.log(i, j);
                 const r = row + i;
                 const c = col + j;
                 if (r < height && c < width) {
                     const tileType = map[r][c];
-                    const descArr = tileResult.object[tileType];
+                    const descArr = processedResult[tileType] || [];
                     descriptions[r][c] = descArr[typeIndices[tileType]] || areaDescription;
                     typeIndices[tileType]++;
                 }

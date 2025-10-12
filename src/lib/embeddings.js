@@ -1,9 +1,7 @@
 import { embed, embedMany } from 'ai';
-import { openai } from '@ai-sdk/google';
+import { google } from '@ai-sdk/google';
 
-const embeddingModel = openai.embedding('gemini-embedding-001');
-
-let embeddingStore = [];
+const embeddingModel = google.embedding('gemini-embedding-001');
 
 // Chunking function
 const generateChunks = (input) => {
@@ -13,20 +11,20 @@ const generateChunks = (input) => {
     .filter(i => i !== '');
 };
 
-// Generate embeddings for multiple chunks
-export const generateEmbeddings = async (items) => {
-  // items: [{ id, content }]
-  const chunks = items.map(item => item.content);
-  const { embeddings } = await embedMany({
-    model: embeddingModel,
-    values: chunks,
-  });
-  return embeddings.map((e, i) => ({
-    id: items[i].id,
-    content: chunks[i],
-    embedding: e
-  }));
-};
+// // Generate embeddings for multiple chunks
+// export const generateEmbeddings = async (items) => {
+//   // items: [{ id, content }]
+//   const chunks = items.map(item => item.content);
+//   const { embeddings } = await embedMany({
+//     model: embeddingModel,
+//     values: chunks,
+//   });
+//   return embeddings.map((e, i) => ({
+//     id: items[i].id,
+//     content: chunks[i],
+//     embedding: e
+//   }));
+// };
 
 // Generate single embedding
 export const generateEmbedding = async (value) => {
@@ -56,6 +54,7 @@ export const addToStore = async (items) => {
 // Find relevant content
 export const findRelevantContent = async (
   userQuery,
+  embeddingStore,
   similarityThreshold = 0.5,
   limit = 4
 ) => {
@@ -74,12 +73,3 @@ export const findRelevantContent = async (
   return results;
 };
 
-// Clear the store
-export const clearStore = () => {
-  embeddingStore = [];
-};
-
-// Get all stored items
-export const getStore = () => {
-  return embeddingStore;
-};

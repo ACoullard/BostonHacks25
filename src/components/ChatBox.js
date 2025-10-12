@@ -2,8 +2,12 @@
 
 import { useChat } from '@ai-sdk/react';
 import { useState, useRef, useEffect } from "react";
+<<<<<<< Updated upstream
 import { generateMapDescriptions } from '@/lib/generate_descriptions';
 export default function ChatBox({ onImageGenerated }) {
+=======
+import { world_tile_descriptions, current_Location } from '@/lib/actions/resources';
+>>>>>>> Stashed changes
 
   generateMapDescriptions(9, 9).then(console.log);
 
@@ -16,13 +20,17 @@ export default function ChatBox({ onImageGenerated }) {
     if (!input.trim()) return;
 
     // Send message right away
-    sendMessage({ text: input });
+    const message_send_promise = sendMessage({ text: input });
 
     // 🔹 Clear input immediately for snappy feel
-    const userPrompt = input;
     setInput("");
 
     // 🔹 Then asynchronously generate image
+
+    await message_send_promise;
+    const last_message = messages[messages.length - 1];
+    const userPrompt = world_tile_descriptions[current_Location[0]][current_Location[1]]
+
     try {
       const res = await fetch("/api/generate-image", {
         method: "POST",
@@ -48,6 +56,7 @@ export default function ChatBox({ onImageGenerated }) {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
 
   return (
     <div className="w-[30vw] mx-auto bg-black/70 rounded-lg shadow-lg overflow-hidden font-mono text-green-400 relative">
