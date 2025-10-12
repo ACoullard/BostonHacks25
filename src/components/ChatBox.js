@@ -6,6 +6,7 @@ import { useState, useRef, useEffect } from "react";
 export default function ChatBox() {
   const [input, setInput] = useState("");
   const { messages, sendMessage } = useChat();
+  console.log("messages: ", messages[messages.length - 1]);
   const messagesEndRef = useRef(null);
 
   const handleSend = () => {
