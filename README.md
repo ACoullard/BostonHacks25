@@ -9,7 +9,16 @@ Inspired by 1977 text-based adventure game, *Zork*, Zork Evolved provides a mult
 ## Overview
 Zork Evolved presents a classic text-based interface to an explorable fantasy world, with a multimedia twist. Users can enter their instructions via the central chat window and view a detailed description of the results. Behind the chat window, an ASCII art rendering of the current location is displayed.
 
+https://github.com/user-attachments/assets/b085f05d-5ad8-41ed-bfb2-e611a546709a
+
+<div align="center"> 
+  
+  _A user exploring a desolate plateau_ 
+  
+</div>
+
 ## Technology
+
 To provide the variety and interactivity of LLMs without sacrificing internal consistency, a hybrid approach is used. A concrete "world state" is stored, which users then modify and interact with through LLMs.
 
 **Text-gen**  
